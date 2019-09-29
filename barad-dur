@@ -1,0 +1,70 @@
+#!/bin/bash
+
+function distribute () {
+  for FILENAME in "$@"
+  do
+    for s in 103 105 106 107 108
+    do
+      scp $FILENAME pi@192.168.0.${s}:$FILENAME
+    done
+  done
+}
+
+function fallback () {
+  echo "Fallin back troops..."
+
+  for s in 103 105 106 107 108
+  do
+    ssh pi@192.168.0.${s} 'hostname; reboot; echo'
+  done
+}
+
+function fortify () {
+  echo "Fortifying fortress..."
+
+  for s in 103 105 106 107 108
+  do
+    ssh pi@192.168.0.${s} 'hostname; sudo apt-get update; echo'
+  done
+}
+
+function steady () {
+  echo "Steadying the lines..."
+
+  for s in 103 105 106 107 108
+  do
+    ssh pi@192.168.0.${s} 'hostname; sudo apt-get install dnsutils ufw; echo'
+  done
+}
+
+function quality () {
+  echo "Checking fortress..."
+
+  for s in 103 105 106 107 108
+  do
+    ssh pi@192.168.0.${s} 'hostname; vcgencmd measure_temp; echo'
+  done
+}
+
+COMMAND=$1
+
+case $COMMAND in
+  distribute | dist)
+    distribute;;
+  fallback | fall)
+    fallback;;
+  fortify | fort)
+    fortify;;
+  steady | st)
+    steady;;
+  quality | q)
+    quality;;
+  *)
+    echo "Command unrecognized. Try the following instead:"
+    echo "distribute <filename> - to scp files to all units"
+    echo "fallback - to reboot all units"
+    echo "fortify - to update all units"
+    echo "steady - to install packages to all units"
+    echo "quality - to get the temp of all units"
+    ;;
+esac
