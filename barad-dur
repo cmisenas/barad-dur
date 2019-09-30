@@ -1,11 +1,16 @@
 #!/bin/bash
 
+# I made sure to prefix all the Pis in the tower with rpi4
+function allpis {
+  grep "rpi4" /etc/hosts | awk '{print $2}'
+}
+
 function distribute () {
   for FILENAME in "$@"
   do
-    for s in 103 105 106 107 108
+    for pi in $(allpis)
     do
-      scp $FILENAME pi@192.168.0.${s}:$FILENAME
+      scp $FILENAME pi@${pi}:$FILENAME
     done
   done
 }
@@ -13,36 +18,36 @@ function distribute () {
 function fallback () {
   echo "Fallin back troops..."
 
-  for s in 103 105 106 107 108
+  for pi in $(allpis)
   do
-    ssh pi@192.168.0.${s} 'hostname; reboot; echo'
+    ssh pi@${pi} 'hostname; reboot; echo'
   done
 }
 
 function fortify () {
   echo "Fortifying fortress..."
 
-  for s in 103 105 106 107 108
+  for pi in $(allpis)
   do
-    ssh pi@192.168.0.${s} 'hostname; sudo apt-get update; echo'
+    ssh pi@${pi} 'hostname; sudo apt-get update; echo'
   done
 }
 
 function steady () {
   echo "Steadying the lines..."
 
-  for s in 103 105 106 107 108
+  for pi in $(allpis)
   do
-    ssh pi@192.168.0.${s} 'hostname; sudo apt-get install dnsutils ufw; echo'
+    ssh pi@${pi} 'hostname; sudo apt-get install dnsutils ufw; echo'
   done
 }
 
 function quality () {
   echo "Checking fortress..."
 
-  for s in 103 105 106 107 108
+  for pi in $(allpis)
   do
-    ssh pi@192.168.0.${s} 'hostname; vcgencmd measure_temp; echo'
+    ssh pi@${pi} 'hostname; vcgencmd measure_temp; java -version; echo'
   done
 }
 
