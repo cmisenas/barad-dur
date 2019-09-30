@@ -5,49 +5,51 @@ function allpis {
   grep "rpi4" /etc/hosts | awk '{print $2}'
 }
 
-function distribute () {
-  for FILENAME in "$@"
+function distribute {
+  echo "Distributing resources..."
+  FILES=$@
+  for file in $FILES
   do
     for pi in $(allpis)
     do
-      scp $FILENAME pi@${pi}:$FILENAME
+      scp $file pi@${pi}:$file
     done
   done
 }
 
-function fallback () {
+function fallback {
   echo "Fallin back troops..."
 
   for pi in $(allpis)
   do
-    ssh pi@${pi} 'hostname; reboot; echo'
+    ssh $pi 'hostname; reboot; echo'
   done
 }
 
-function fortify () {
+function fortify {
   echo "Fortifying fortress..."
 
   for pi in $(allpis)
   do
-    ssh pi@${pi} 'hostname; sudo apt-get update; echo'
+    ssh $pi 'hostname; sudo apt-get update; echo'
   done
 }
 
-function steady () {
-  echo "Steadying the lines..."
+function quality {
+  echo "Checking perimeter..."
 
   for pi in $(allpis)
   do
-    ssh pi@${pi} 'hostname; sudo apt-get install dnsutils ufw; echo'
+    ssh $pi 'hostname; vcgencmd measure_temp; java -version; echo'
   done
 }
 
-function quality () {
-  echo "Checking fortress..."
+function steady {
+  echo "Steadying the lines... $@"
 
   for pi in $(allpis)
   do
-    ssh pi@${pi} 'hostname; vcgencmd measure_temp; java -version; echo'
+    ssh $pi "$@"
   done
 }
 
@@ -55,13 +57,13 @@ COMMAND=$1
 
 case $COMMAND in
   distribute | dist)
-    distribute;;
+    distribute ${@:2};;
   fallback | fall)
     fallback;;
   fortify | fort)
     fortify;;
   steady | st)
-    steady;;
+    steady ${@:2};;
   quality | q)
     quality;;
   *)
